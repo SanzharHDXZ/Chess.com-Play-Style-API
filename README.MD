@@ -52,7 +52,7 @@ The application uses Flask-SQLAlchemy to manage the database. The database URI i
 To run the unit tests, use the following command:
 
 ```bash
-pytest
+pytest tests/ -v
 ```
 
 ## BDD Testing
@@ -60,12 +60,12 @@ pytest
 To run the BDD tests, use the following command:
 
 ```bash
-behave
+behave features/api.feature
 ```
 
 ## API Documentation
 
-The API documentation is available through Swagger UI. To access it, run the application and navigate to `/apidocs` in your browser.
+The API documentation is available through Swagger UI. To access it, run the application and navigate to `/api/docs` in your browser.
 
 ## Contributing
 
