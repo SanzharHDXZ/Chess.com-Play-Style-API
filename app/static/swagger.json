@@ -1,0 +1,130 @@
+{
+    "swagger": "2.0",
+    "info": {
+      "title": "Chess.com Play Style API",
+      "version": "1.0.0",
+      "description": "API for analyzing chess.com player styles"
+    },
+    "basePath": "/",
+    "schemes": ["http", "https"],
+    "paths": {
+      "/auth/register": {
+        "post": {
+          "tags": ["Authentication"],
+          "summary": "Register new API key",
+          "parameters": [{
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "email": {"type": "string"},
+                "password": {"type": "string"}
+              }
+            }
+          }],
+          "responses": {
+            "201": {"description": "API key generated successfully"},
+            "400": {"description": "Invalid input"}
+          }
+        }
+      },
+      "/auth/update": {
+        "put": {
+          "tags": ["Authentication"],
+          "summary": "Update API key",
+          "parameters": [{
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "email": {"type": "string"},
+                "password": {"type": "string"}
+              }
+            }
+          }],
+          "responses": {
+            "200": {"description": "API key updated successfully"},
+            "401": {"description": "Invalid credentials"},
+            "400": {"description": "Invalid input"}
+          }
+        }
+      },
+      "/auth/delete": {
+        "delete": {
+          "tags": ["Authentication"],
+          "summary": "Delete API key",
+          "parameters": [{
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "email": {"type": "string"},
+                "password": {"type": "string"}
+              }
+            }
+          }],
+          "responses": {
+            "200": {"description": "User deleted successfully"},
+            "401": {"description": "Invalid credentials"},
+            "400": {"description": "Invalid input"}
+          }
+        }
+      },
+      "/api/player/profile/{username}": {
+        "get": {
+          "tags": ["Player"],
+          "summary": "Get player profile",
+          "parameters": [
+            {
+              "in": "path",
+              "name": "username",
+              "required": true,
+              "type": "string"
+            },
+            {
+              "in": "header",
+              "name": "X-API-Key",
+              "required": true,
+              "type": "string"
+            }
+          ],
+          "responses": {
+            "200": {"description": "Player profile retrieved successfully"},
+            "401": {"description": "Invalid API key"},
+            "400": {"description": "Invalid username"}
+          }
+        }
+      },
+      "/api/player/style/{username}": {
+        "get": {
+          "tags": ["Player"],
+          "summary": "Get player style analysis",
+          "parameters": [
+            {
+              "in": "path",
+              "name": "username",
+              "required": true,
+              "type": "string"
+            },
+            {
+              "in": "header",
+              "name": "X-API-Key",
+              "required": true,
+              "type": "string"
+            }
+          ],
+          "responses": {
+            "200": {"description": "Style analysis retrieved successfully"},
+            "401": {"description": "Invalid API key"},
+            "400": {"description": "Invalid username"}
+          }
+        }
+      }
+    }
+  }
