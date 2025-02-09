@@ -32,11 +32,7 @@ def get_player_profile_route(username):
         stats = get_player_stats(username).json
         
         profile = data['player']
-        profile['stats'] = {
-            'chess_rapid': stats['chess_rapid']['best']['rating'],
-            'chess_blitz': stats['chess_blitz']['best']['rating'],
-            'chess_bullet': stats['chess_bullet']['best']['rating']
-        }
+        profile['stats'] = stats
         
         return jsonify(profile), 200
     except Exception as e:
