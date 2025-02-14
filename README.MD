@@ -18,8 +18,6 @@ This API analyzes chess.com player styles using the chess.com API and Google's G
 - Flask-Caching
 - Chess.com API
 - Google Gemini AI
-- pytest
-- behave
 - Swagger UI
 
 ## Setup
@@ -47,22 +45,6 @@ The application uses Flask-SQLAlchemy to manage the database. The database URI i
 -   `/api/profile/<username>` - Retrieves the chess.com profile and play style analysis for a given username. Requires authentication.
 -   `/api/admin/users` - Retrieves a list of all users (Admin only).
 
-## Testing
-
-To run the unit tests, use the following command:
-
-```bash
-pytest tests/ -v
-```
-
-## BDD Testing
-
-To run the BDD tests, use the following command:
-
-```bash
-behave features/api.feature
-```
-
 ## API Documentation
 
 The API documentation is available through Swagger UI. To access it, run the application and navigate to `/api/docs` in your browser.
@@ -73,5 +55,4 @@ Contributions are welcome! Please follow these steps:
 
 1.  Fork the repository.
 2.  Create a new branch for your feature or bug fix.
-3.  Write tests for your changes.
-4.  Submit a pull request.
+3.  Submit a pull request.
