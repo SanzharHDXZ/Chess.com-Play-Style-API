@@ -24,7 +24,7 @@ This API analyzes chess.com player styles using the chess.com API and Google's G
 
 1.  Clone the repository.
 2.  Set up a virtual environment.
-3.  Install dependencies: `pip install -r requirements.txt` and `pip install -r requirements-test.txt`.
+3.  Install dependencies: `pip install -r requirements.txt`.
 4.  Set environment variables: `SECRET_KEY` and `GOOGLE_API_KEY`.
 5.  Initialize the database: `python run.py`.
 
