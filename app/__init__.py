@@ -47,3 +47,4 @@ def create_app():
     app.register_blueprint(api.bp)
 
     return app
+app = create_app()
