@@ -88,19 +88,3 @@ def get_play_style_prompt(username):
         }), 200
     except Exception as e:
         return jsonify({'error': str(e)}), 400
-    
-if __name__ == "__main__":
-    from flask import Flask
-    from config import Config
-
-    app = Flask(__name__)
-    app.config.from_object(Config)
-
-    from app import cache, limiter
-    cache.init_app(app)
-    limiter.init_app(app)
-
-    app.register_blueprint(bp)
-
-    app.run(host="0.0.0.0", port=10000)
-
