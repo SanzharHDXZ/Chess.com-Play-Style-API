@@ -11,5 +11,6 @@ class Config:
     FLASK_ENV = os.environ.get('FLASK_ENV', 'production')
     DEBUG = os.environ.get('DEBUG', 'False') == 'True'
     CACHE_TYPE = "redis"
-    CACHE_REDIS_URL = os.getenv("REDIS_URL", "redis://red-cvht2r9c1ekc738fd1sg:6379")
-    RATELIMIT_STORAGE_URI = os.getenv("REDIS_URL", "redis://red-cvht2r9c1ekc738fd1sg:6379")
+    CACHE_REDIS_URL = os.environ.get("REDIS_URL", "redis://red-cvht2r9c1ekc738fd1sg:6379/0")
+    RATELIMIT_STORAGE_URI = os.environ.get("REDIS_URL", "redis://red-cvht2r9c1ekc738fd1sg:6379/0")
+    PREFERRED_URL_SCHEME = "https"

@@ -15,7 +15,7 @@ REDIS_URL = os.getenv("REDIS_URL", "redis://localhost:6379/0")  # Теперь �
 
 limiter = Limiter(
     key_func=get_remote_address,
-    storage_uri=REDIS_URL  # <-- Исправлено
+    storage_uri="redis://red-cvht2r9c1ekc738fd1sg:6379/0"
 )
 cache = Cache(config={"CACHE_TYPE": "redis", "CACHE_REDIS_URL": REDIS_URL})  # <-- Кэш теперь тоже использует Redis
 
@@ -41,7 +41,7 @@ def create_app():
 
     # Swagger UI
     SWAGGER_URL = '/api/docs'
-    API_URL = 'https://chess-com-play-style-api.onrender.com/static/swagger.json'  # <-- Проверь, есть ли этот файл
+    API_URL = '/static/swagger.json'  # Вместо полного URL
     swaggerui_blueprint = get_swaggerui_blueprint(
         SWAGGER_URL,
         API_URL,
