@@ -4,6 +4,7 @@ from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
 from flask_caching import Cache
 from flask_swagger_ui import get_swaggerui_blueprint
+from flask_cors import CORS 
 from config import Config
 
 db = SQLAlchemy()
@@ -13,6 +14,20 @@ cache = Cache()
 def create_app():
     app = Flask(__name__)
     app.config.from_object(Config)
+
+    # Initialize CORS
+    CORS(app, resources={
+        r"/api/*": {
+            "origins": ["http://localhost:4200"],  # Your Angular app's URL
+            "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+            "allow_headers": ["Content-Type", "X-API-Key"]
+        },
+        r"/auth/*": {
+            "origins": ["http://localhost:4200"],
+            "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+            "allow_headers": ["Content-Type"]
+        }
+    })
 
     db.init_app(app)
     limiter.init_app(app)

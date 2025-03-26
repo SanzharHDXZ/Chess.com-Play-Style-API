@@ -13,6 +13,10 @@ Client.request_config["headers"]["User-Agent"] = (
 )
 
 def verify_api_key():
+    # Skip API key verification for OPTIONS requests
+    if request.method == 'OPTIONS':
+        return True
+        
     api_key = request.headers.get('X-API-Key')
     if not api_key:
         return None
@@ -20,6 +24,10 @@ def verify_api_key():
 
 @bp.before_request
 def before_request():
+    # Allow OPTIONS requests to pass through
+    if request.method == 'OPTIONS':
+        return jsonify({'status': 'ok'}), 200
+        
     if not verify_api_key():
         return jsonify({'error': 'Invalid API key'}), 401
 
@@ -80,3 +88,19 @@ def get_play_style_prompt(username):
         }), 200
     except Exception as e:
         return jsonify({'error': str(e)}), 400
+    
+if __name__ == "__main__":
+    from flask import Flask
+    from config import Config
+
+    app = Flask(__name__)
+    app.config.from_object(Config)
+
+    from app import cache, limiter
+    cache.init_app(app)
+    limiter.init_app(app)
+
+    app.register_blueprint(bp)
+
+    app.run(host="0.0.0.0", port=10000)
+
