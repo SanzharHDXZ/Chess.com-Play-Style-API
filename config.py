@@ -2,7 +2,7 @@ import os
 
 class Config:
     SECRET_KEY = os.environ.get('SECRET_KEY', 'dev-secret-key')
-    SQLALCHEMY_DATABASE_URI = 'postgresql://chessnotessss_user:6uLDqOzeWg6E72GIfiSPu4K34E8BCF9P@dpg-cvhscbtrie7s73ea5pjg-a/chessnotessss'
+    SQLALCHEMY_DATABASE_URI = 'postgresql://chessnotessss_user:6uLDqOzeWg6E72GIfiSPu4K34E8BCF9P@dpg-cvhscbtrie7s73ea5pjg-a/chessnotessss?sslmode=require'
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     
     # Redis configuration with fallback
