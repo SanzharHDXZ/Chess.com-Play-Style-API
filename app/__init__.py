@@ -5,12 +5,14 @@ from flask_limiter.util import get_remote_address
 from flask_caching import Cache
 from flask_swagger_ui import get_swaggerui_blueprint
 from flask_cors import CORS 
+from flask_migrate import Migrate
 from config import Config
 import logging
 import redis
 import os
 
 db = SQLAlchemy()
+migrate = Migrate()
 
 # Create Redis client
 redis_client = redis.from_url(Config.CACHE_REDIS_URL) if Config.CACHE_REDIS_URL else None
@@ -68,9 +70,15 @@ def create_app():
         app.logger.error(f"Unhandled Exception: {str(e)}")
         return jsonify(error=str(e)), 500
 
+    # Initialize extensions
     db.init_app(app)
+    migrate.init_app(app, db)
     limiter.init_app(app)
     cache.init_app(app)
+
+    # Create tables (optional, but can be useful)
+    with app.app_context():
+        db.create_all()
 
     # Swagger UI configuration
     SWAGGER_URL = '/api/docs'
