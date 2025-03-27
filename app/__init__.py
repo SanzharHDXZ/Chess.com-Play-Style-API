@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
@@ -6,6 +6,7 @@ from flask_caching import Cache
 from flask_swagger_ui import get_swaggerui_blueprint
 from flask_cors import CORS 
 from config import Config
+import logging
 
 db = SQLAlchemy()
 limiter = Limiter(key_func=get_remote_address)
@@ -14,6 +15,15 @@ cache = Cache()
 def create_app():
     app = Flask(__name__)
     app.config.from_object(Config)
+
+    # Logging configuration
+    logging.basicConfig(level=logging.INFO)
+    
+    # Error handler
+    @app.errorhandler(Exception)
+    def handle_error(e):
+        app.logger.error(f"Unhandled Exception: {str(e)}")
+        return jsonify(error=str(e)), 500
 
     # Enable CORS for all routes and allow all origins
     CORS(app, resources={r"/*": {"origins": "*"}}, supports_credentials=True)
