@@ -6,20 +6,35 @@ from flask_caching import Cache
 from flask_swagger_ui import get_swaggerui_blueprint
 from flask_cors import CORS 
 from config import Config
+from flask import request, make_response
 
 db = SQLAlchemy()
 limiter = Limiter(key_func=get_remote_address)
 cache = Cache()
 
+def add_cors_headers(response):
+    response.headers.add("Access-Control-Allow-Origin", "*")
+    response.headers.add("Access-Control-Allow-Headers", "Content-Type,X-API-Key")
+    response.headers.add("Access-Control-Allow-Methods", "GET,POST,PUT,DELETE,OPTIONS")
+    return response
+
 def create_app():
     app = Flask(__name__)
-    app.config.from_object(Config)
+    
+    # Apply CORS middleware
+    app.after_request(add_cors_headers)
 
     # Enable CORS for all routes and allow all origins
     CORS(app, 
      resources={r"/*": {"origins": "*"}}, 
      supports_credentials=True,
-     methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"]
+     methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+     allow_headers=[
+                      "Content-Type", 
+             "Authorization", 
+             "Access-Control-Allow-Credentials",
+             "X-API-Key"
+     ]
 )
 
     db.init_app(app)

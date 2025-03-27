@@ -1,12 +1,21 @@
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, make_response, request, jsonify
 from app.models.user import User
 from app import db
 
 bp = Blueprint('auth', __name__, url_prefix='/auth')
 
-@bp.route('/register', methods=['POST'])
+@bp.route('/register', methods=['POST', 'OPTIONS'])
 def register_api_key():
+    # Handle OPTIONS request for CORS preflight
+    if request.method == 'OPTIONS':
+        response = make_response()
+        response.headers.add("Access-Control-Allow-Origin", "*")
+        response.headers.add('Access-Control-Allow-Headers', 'Content-Type,X-API-Key')
+        response.headers.add('Access-Control-Allow-Methods', 'POST')
+        return response
+
     data = request.get_json()
+    
     if User.query.filter_by(email=data['email']).first():
         return jsonify({'error': 'Email already registered'}), 400
     
