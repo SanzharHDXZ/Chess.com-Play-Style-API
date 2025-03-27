@@ -2,7 +2,6 @@ from flask import Flask, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
-from flask_limiter.storage import RedisStorage
 from flask_caching import Cache
 from flask_swagger_ui import get_swaggerui_blueprint
 from flask_cors import CORS 
@@ -11,13 +10,17 @@ import logging
 import redis
 
 db = SQLAlchemy()
-# Configure Redis storage for rate limiter
-redis_client = redis.from_url(Config.CACHE_REDIS_URL)
+
+# Create Redis client
+redis_client = redis.from_url(Config.CACHE_REDIS_URL) if Config.CACHE_REDIS_URL else None
+
+# Configure limiter with fallback to in-memory storage
 limiter = Limiter(
     key_func=get_remote_address,
-    storage_uri=Config.CACHE_REDIS_URL,
-    storage_func=lambda: RedisStorage(redis_client)
+    storage_uri=Config.CACHE_REDIS_URL if redis_client else None,
+    default_limits=["100 per day"]
 )
+
 cache = Cache()
 
 def create_app():
