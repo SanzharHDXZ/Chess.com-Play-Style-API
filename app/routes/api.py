@@ -1,41 +1,51 @@
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, request, jsonify, current_app
 from app.models.user import User
 from app import cache, limiter
 from chessdotcom import get_player_profile, get_player_stats, get_player_game_archives, get_player_games_by_month_pgn, Client
 import google.generativeai as genai
 from config import Config
+import logging
 
 bp = Blueprint('api', __name__, url_prefix='/api')
 
 Client.request_config["headers"]["User-Agent"] = (
-    "Chess Style Analysis API"
+    "Chess Style Analysis API "
     "Contact: example@chess.com"
 )
 
 def verify_api_key():
-    # Skip API key verification for OPTIONS requests
-    if request.method == 'OPTIONS':
-        return True
-        
+    # More detailed API key verification
     api_key = request.headers.get('X-API-Key')
     if not api_key:
+        current_app.logger.warning(f"No API key provided for {request.path}")
         return None
-    return User.query.filter_by(api_key=api_key).first()
+    
+    user = User.query.filter_by(api_key=api_key).first()
+    if not user:
+        current_app.logger.warning(f"Invalid API key used: {api_key}")
+    return user
 
 @bp.before_request
 def before_request():
+    # Detailed logging for incoming requests
+    current_app.logger.info(f"Incoming {request.method} request to {request.path}")
+    current_app.logger.info(f"Headers: {request.headers}")
+    
     # Allow OPTIONS requests to pass through
     if request.method == 'OPTIONS':
         return jsonify({'status': 'ok'}), 200
         
-    if not verify_api_key():
-        return jsonify({'error': 'Invalid API key'}), 401
+    user = verify_api_key()
+    if not user:
+        current_app.logger.error(f"API key verification failed for {request.path}")
+        return jsonify({'error': 'Invalid or missing API key'}), 401
 
 @bp.route('/player/profile/<username>', methods=['GET'])
 @limiter.limit("100/day")
 @cache.memoize(timeout=300)
 def get_player_profile_route(username):
     try:
+        current_app.logger.info(f"Fetching profile for username: {username}")
         data = get_player_profile(username).json
         stats = get_player_stats(username).json
         
@@ -44,6 +54,7 @@ def get_player_profile_route(username):
         
         return jsonify(profile), 200
     except Exception as e:
+        current_app.logger.error(f"Error fetching player profile: {str(e)}")
         return jsonify({'error': str(e)}), 400
 
 @bp.route('/player/style/<username>', methods=['GET'])
