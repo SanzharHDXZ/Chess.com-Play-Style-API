@@ -39,7 +39,7 @@ def register():
     
     new_user = User(
         email=data['email'], 
-        password=hashed_password, 
+        password_hash=hashed_password,  # Change from 'password' to 'password_hash'
         api_key=api_key
     )
     
