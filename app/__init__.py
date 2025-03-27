@@ -79,6 +79,7 @@ def create_app():
     # Create tables (optional, but can be useful)
     with app.app_context():
         db.create_all()
+        migrate.init_app(app, db)
 
     # Swagger UI configuration
     SWAGGER_URL = '/api/docs'
