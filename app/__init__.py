@@ -16,7 +16,11 @@ def create_app():
     app.config.from_object(Config)
 
     # Enable CORS for all routes and allow all origins
-    CORS(app, resources={r"/*": {"origins": "*"}}, supports_credentials=True)
+    CORS(app, 
+     resources={r"/*": {"origins": "*"}}, 
+     supports_credentials=True,
+     methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"]
+)
 
     db.init_app(app)
     limiter.init_app(app)
