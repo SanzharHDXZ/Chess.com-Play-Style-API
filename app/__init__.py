@@ -20,7 +20,7 @@ def add_cors_headers(response):
 
 def create_app():
     app = Flask(__name__)
-    
+    app.config.from_object(Config)
     # Apply CORS middleware
     app.after_request(add_cors_headers)
 
@@ -38,6 +38,8 @@ def create_app():
 )
 
     db.init_app(app)
+    with app.app_context():
+        db.create_all()
     limiter.init_app(app)
     cache.init_app(app)
 
