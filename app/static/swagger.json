@@ -7,120 +7,153 @@
   },
   "basePath": "/",
   "schemes": ["http", "https"],
-  "consumes": ["application/json"],
-  "produces": ["application/json"],
-  "securityDefinitions": {
-    "ApiKey": {
-      "type": "apiKey",
-      "in": "header",
-      "name": "X-API-Key"
-    }
-  },
   "paths": {
     "/auth/register": {
       "post": {
-        "summary": "Register a new user and generate API key",
         "tags": ["Authentication"],
-        "parameters": [
-          {
-            "in": "body",
-            "name": "body",
-            "required": true,
-            "schema": {
-              "type": "object",
-              "required": ["email", "password"],
-              "properties": {
-                "email": {
-                  "type": "string",
-                  "format": "email"
-                },
-                "password": {
-                  "type": "string",
-                  "minLength": 6
-                }
-              }
+        "summary": "Register new API key",
+        "parameters": [{
+          "in": "body",
+          "name": "body",
+          "required": true,
+          "schema": {
+            "type": "object",
+            "properties": {
+              "email": {"type": "string"},
+              "password": {"type": "string"}
             }
           }
-        ],
+        }],
         "responses": {
-          "201": {
-            "description": "API key generated successfully",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "api_key": {
-                  "type": "string"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Email already registered"
-          }
+          "201": {"description": "API key generated successfully"},
+          "400": {"description": "Invalid input"}
         }
       }
     },
     "/auth/update": {
       "put": {
-        "summary": "Update user API key",
         "tags": ["Authentication"],
-        "parameters": [
-          {
-            "in": "body",
-            "name": "body",
-            "required": true,
-            "schema": {
-              "type": "object",
-              "required": ["email", "password"],
-              "properties": {
-                "email": {
-                  "type": "string",
-                  "format": "email"
-                },
-                "password": {
-                  "type": "string"
-                }
-              }
+        "summary": "Update API key",
+        "parameters": [{
+          "in": "body",
+          "name": "body",
+          "required": true,
+          "schema": {
+            "type": "object",
+            "properties": {
+              "email": {"type": "string"},
+              "password": {"type": "string"}
             }
           }
-        ],
+        }],
         "responses": {
-          "200": {
-            "description": "API key updated successfully",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "api_key": {
-                  "type": "string"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Invalid credentials"
-          }
+          "200": {"description": "API key updated successfully"},
+          "401": {"description": "Invalid credentials"},
+          "400": {"description": "Invalid input"}
         }
       }
     },
     "/auth/delete": {
       "delete": {
-        "summary": "Delete user account",
         "tags": ["Authentication"],
+        "summary": "Delete API key",
+        "parameters": [{
+          "in": "body",
+          "name": "body",
+          "required": true,
+          "schema": {
+            "type": "object",
+            "properties": {
+              "email": {"type": "string"},
+              "password": {"type": "string"}
+            }
+          }
+        }],
+        "responses": {
+          "200": {"description": "User deleted successfully"},
+          "401": {"description": "Invalid credentials"},
+          "400": {"description": "Invalid input"}
+        }
+      }
+    },
+    "/api/player/profile/{username}": {
+      "get": {
+        "tags": ["Player"],
+        "summary": "Get player profile",
         "parameters": [
+          {
+            "in": "path",
+            "name": "username",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "header",
+            "name": "X-API-Key",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {"description": "Player profile retrieved successfully"},
+          "401": {"description": "Invalid API key"},
+          "400": {"description": "Invalid username"}
+        }
+      }
+    },
+    "/api/player/style/{username}": {
+      "get": {
+        "tags": ["Player"],
+        "summary": "Get player style analysis",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "username",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "header",
+            "name": "X-API-Key",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {"description": "Style analysis retrieved successfully"},
+          "401": {"description": "Invalid API key"},
+          "400": {"description": "Invalid username"}
+        }
+      }
+    },
+    "/api/player/mimic-move/{username}": {
+      "post": {
+        "tags": ["Player Style Mimicry"],
+        "summary": "Generate a chess move in the style of the player",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "username",
+            "required": true,
+            "type": "string",
+            "description": "Chess.com username"
+          },
+          {
+            "in": "header",
+            "name": "X-API-Key",
+            "required": true,
+            "type": "string"
+          },
           {
             "in": "body",
             "name": "body",
             "required": true,
             "schema": {
               "type": "object",
-              "required": ["email", "password"],
               "properties": {
-                "email": {
+                "fen": {
                   "type": "string",
-                  "format": "email"
-                },
-                "password": {
-                  "type": "string"
+                  "description": "Chess position in FEN notation"
                 }
               }
             }
@@ -128,102 +161,75 @@
         ],
         "responses": {
           "200": {
-            "description": "User deleted successfully"
-          },
-          "401": {
-            "description": "Invalid credentials"
-          }
-        }
-      }
-    },
-    "/api/player/profile/{username}": {
-      "get": {
-        "summary": "Get player profile and statistics",
-        "tags": ["Player"],
-        "security": [
-          {
-            "ApiKey": []
-          }
-        ],
-        "parameters": [
-          {
-            "name": "username",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Player profile retrieved successfully",
+            "description": "Move generated successfully",
             "schema": {
               "type": "object",
               "properties": {
-                "username": {
-                  "type": "string"
-                },
-                "stats": {
-                  "type": "object"
-                }
+                "username": {"type": "string"},
+                "original_fen": {"type": "string"},
+                "move": {"type": "string"},
+                "new_fen": {"type": "string"},
+                "reasoning": {"type": "string"}
               }
             }
           },
-          "400": {
-            "description": "Invalid username"
-          },
-          "500": {
-            "description": "Internal server error"
-          }
+          "401": {"description": "Invalid API key"},
+          "400": {"description": "Invalid input or move generation failed"}
         }
       }
     },
-    "/api/player/style/{username}": {
-      "get": {
-        "summary": "Analyze player's chess playing style",
-        "tags": ["Player"],
-        "security": [
-          {
-            "ApiKey": []
-          }
-        ],
+    "/api/player/generate-game/{username}": {
+      "post": {
+        "tags": ["Player Style Mimicry"],
+        "summary": "Generate a complete chess game in the style of the player",
         "parameters": [
           {
-            "name": "username",
             "in": "path",
+            "name": "username",
+            "required": true,
+            "type": "string",
+            "description": "Chess.com username"
+          },
+          {
+            "in": "header",
+            "name": "X-API-Key",
             "required": true,
             "type": "string"
+          },
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "opening": {
+                  "type": "string",
+                  "description": "Optional opening to start with (e.g., 'Sicilian Defense')"
+                },
+                "opponent_style": {
+                  "type": "string",
+                  "description": "Description of opponent's playing style"
+                }
+              }
+            }
           }
         ],
         "responses": {
           "200": {
-            "description": "Player style analysis retrieved successfully",
+            "description": "Game generated successfully",
             "schema": {
               "type": "object",
               "properties": {
-                "username": {
-                  "type": "string"
-                },
-                "style_analysis": {
-                  "type": "string"
-                },
-                "monthly_summaries": {
-                  "type": "array",
-                  "items": {
-                    "type": "string"
-                  }
-                }
+                "username": {"type": "string"},
+                "pgn": {"type": "string"},
+                "opponent_style": {"type": "string"},
+                "opening": {"type": "string"}
               }
             }
           },
-          "400": {
-            "description": "Invalid username"
-          },
-          "404": {
-            "description": "No game history available"
-          },
-          "500": {
-            "description": "Internal server error"
-          }
+          "401": {"description": "Invalid API key"},
+          "400": {"description": "Invalid input or game generation failed"}
         }
       }
     }
