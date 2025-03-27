@@ -17,7 +17,7 @@ Deprecated==1.2.18
 exceptiongroup==1.2.2
 Flask==3.1.0
 Flask-Caching==2.3.0
-Flask-Limiter==3.10.1
+Flask-Limiter
 Flask-SQLAlchemy==3.1.1
 flask-swagger-ui==4.11.1
 frozenlist==1.5.0
@@ -73,5 +73,5 @@ yarl==1.18.3
 gunicorn==21.2.0
 flask_cors==4.0.0
 psycopg2==2.9.9
-redis==5.0.1
+redis
 flask_migrate

@@ -6,7 +6,19 @@
     "description": "API for analyzing and mimicking chess.com player styles"
   },
   "basePath": "/",
-  "schemes": ["http", "https"],
+  "schemes": ["https"],
+  "securityDefinitions": {
+    "APIKey": {
+      "type": "apiKey",
+      "in": "header",
+      "name": "X-API-Key"
+    }
+  },
+  "security": [
+    {
+      "APIKey": []
+    }
+  ],
   "paths": {
     "/auth/register": {
       "post": {

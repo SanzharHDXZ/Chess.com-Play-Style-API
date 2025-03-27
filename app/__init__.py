@@ -8,6 +8,7 @@ from flask_cors import CORS
 from config import Config
 import logging
 import redis
+import os
 
 db = SQLAlchemy()
 
@@ -30,33 +31,57 @@ def create_app():
     # Logging configuration
     logging.basicConfig(level=logging.INFO)
     
-    # Comprehensive error handler
+    # Comprehensive CORS configuration
+    CORS(app, 
+         resources={r"/*": {
+             "origins": ["https://chess-com-play-style-api.onrender.com", "http://localhost:5000", "*"],
+             "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+             "allow_headers": [
+                 "Content-Type", 
+                 "Authorization", 
+                 "Access-Control-Allow-Credentials", 
+                 "X-API-Key"
+             ]
+         }},
+         supports_credentials=True
+    )
+
+    # Security headers
+    @app.after_request
+    def add_security_headers(response):
+        response.headers['X-Content-Type-Options'] = 'nosniff'
+        response.headers['X-Frame-Options'] = 'SAMEORIGIN'
+        response.headers['Content-Security-Policy'] = "default-src 'self'; script-src 'self' 'unsafe-inline'"
+        return response
+
+    # Global OPTIONS handler
+    @app.route('/options', methods=['OPTIONS'])
+    def options_handler():
+        response = jsonify({'status': 'ok'})
+        response.headers.add('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS')
+        response.headers.add('Access-Control-Allow-Headers', 'Content-Type, X-API-Key, Authorization')
+        return response
+
+    # Error handler
     @app.errorhandler(Exception)
     def handle_error(e):
         app.logger.error(f"Unhandled Exception: {str(e)}")
         return jsonify(error=str(e)), 500
 
-    # CORS configuration with more specific settings
-    CORS(app, resources={r"/*": {"origins": "*", "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"]}}, supports_credentials=True)
-
-    # Allow OPTIONS method globally
-    @app.route('/options', methods=['OPTIONS'])
-    def options_handler():
-        response = jsonify({'status': 'ok'})
-        response.headers.add('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS')
-        response.headers.add('Access-Control-Allow-Headers', 'Content-Type, X-API-Key')
-        return response
-
     db.init_app(app)
     limiter.init_app(app)
     cache.init_app(app)
 
+    # Swagger UI configuration
     SWAGGER_URL = '/api/docs'
     API_URL = '/static/swagger.json'
     swaggerui_blueprint = get_swaggerui_blueprint(
         SWAGGER_URL,
         API_URL,
-        config={'app_name': "Chess.com Play Style API"}
+        config={
+            'app_name': "Chess.com Play Style API",
+            'validatorUrl': None  # Disable validator
+        }
     )
     app.register_blueprint(swaggerui_blueprint, url_prefix=SWAGGER_URL)
 
