@@ -12,7 +12,7 @@ class Config:
     CACHE_DEFAULT_TIMEOUT = int(os.environ.get('CACHE_TIMEOUT', 300))
     
     # Rate limiting
-    RATELIMIT_DEFAULT = os.environ.get('RATELIMIT_DEFAULT', "100 per day")
+    RATELIMIT_DEFAULT = os.environ.get('RATELIMIT_DEFAULT', "200 per day")
     
     # Google API Key
     GOOGLE_API_KEY = os.environ.get('GOOGLE_API_KEY')

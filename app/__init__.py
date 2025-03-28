@@ -21,7 +21,7 @@ redis_client = redis.from_url(Config.CACHE_REDIS_URL) if Config.CACHE_REDIS_URL 
 limiter = Limiter(
     key_func=get_remote_address,
     storage_uri=Config.CACHE_REDIS_URL if redis_client else None,
-    default_limits=["100 per day"]
+    default_limits=["200 per day"]
 )
 
 cache = Cache()
