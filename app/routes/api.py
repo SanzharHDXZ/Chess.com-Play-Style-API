@@ -66,36 +66,30 @@ def get_play_style_prompt(username):
         genai.configure(api_key=Config.GOOGLE_API_KEY)
         model = genai.GenerativeModel(
             'models/gemini-1.5-flash',
-            system_instruction="You are a chess expert! Analyze player's chess games and provide detailed style analysis."
+            system_instruction="Concisely analyze a chess player's style from their game history."
         )
         
-        # Get recent games
-        archives = get_player_game_archives(username).json['archives'][-3:]  # Last 6 months
-        games_history = []
+        # Get most recent games archive
+        archives = get_player_game_archives(username).json['archives']
+        recent_archive = archives[-1]  # Most recent month
         
-        for archive in archives:
-            year = archive[-7:-3]
-            month = archive[-2:]
-            games = get_player_games_by_month_pgn(username, year, month).text
-            games_history.append(games[:30000])  # Limit to 30,000 characters
-
-        # Generate analysis for each month
-        game_summaries = []
-        for games in games_history:
-            response = model.generate_content(
-                f'Provide a summary of {username}\'s playing style based on these games: {games}'
-            )
-            game_summaries.append(response.text)
+        # Extract recent games
+        year = recent_archive[-7:-3]
+        month = recent_archive[-2:]
+        games = get_player_games_by_month_pgn(username, year, month).text[:20000]  # Limit to 20,000 chars
         
-        # Generate overall analysis
-        final_analysis = model.generate_content(
-            f'Provide a comprehensive analysis of {username}\'s playing style based on these summaries: {game_summaries}'
+        # Generate compact style analysis
+        style_analysis = model.generate_content(
+            f'Provide a brief, focused 3-paragraph analysis of {username}\'s chess playing style. '
+            'Cover key characteristics like opening preferences, tactical approach, '
+            'and strategic strengths/weaknesses. Be precise and use specific examples.'
         )
         
         return jsonify({
             'username': username,
-            'style_analysis': final_analysis.text,
-            'monthly_summaries': game_summaries
+            'style_analysis': style_analysis.text,
+            'games_period': f'{month}/{year}'
         }), 200
     except Exception as e:
+        current_app.logger.error(f"Style analysis error for {username}: {str(e)}")
         return jsonify({'error': str(e)}), 400
